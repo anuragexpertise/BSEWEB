@@ -1,0 +1,802 @@
+/* ==============================================
+   THEME VARIABLES
+   ============================================== */
+:root {
+  --theme-brown-dark: #3A2E28;
+  --theme-brown-glassy: rgba(58, 46, 40, 0.75);
+  /* Adjusted opacity for better glass effect */
+  --theme-green-highlight: #8BC34A;
+  --theme-green-subtle: #A5D6A7;
+  --theme-text-light: #F5F5F5;
+  --theme-text-medium: #E0E0E0;
+  --theme-text-dark: #333333;
+  --font-primary: 'Montserrat', sans-serif;
+  --modal-backdrop-color: rgba(0, 0, 0, 0.7);
+  --animation-duration: 0.5s;
+  --star-color: #FFD700;
+  --star-color-empty: #ccc;
+  --glass-border-color: rgba(245, 245, 245, 0.1);
+  /* Light border for glass elements */
+  --glass-shadow-color: rgba(0, 0, 0, 0.3);
+  /* Shadow for glass elements */
+  --glass-blur-amount: 10px;
+}
+
+/* ==============================================
+     RESET & BASE STYLES
+     ============================================== */
+html,
+* {
+  /* Apply box-sizing to html as well for consistency */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-primary);
+  min-height: 100vh;
+  min-width: 100vw;
+  position: relative;
+  background-color: var(--theme-brown-dark);
+  color: var(--theme-text-light);
+  line-height: 1.6;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--theme-green-subtle);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--theme-green-highlight);
+}
+
+
+
+/* ==============================================
+     HEADER, NAVIGATION & FOOTER
+     ============================================== */
+.glassy-header {
+  position: fixed;
+  top: 0;
+  height: 60px;
+  width: 100%;
+  padding: 15px 20px;
+  z-index: 1030;
+  background: var(--theme-brown-glassy);
+  backdrop-filter: blur(var(--glass-blur-amount));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount));
+  border-bottom: 1px solid var(--glass-border-color);
+  box-shadow: 0 2px 10px var(--glass-shadow-color);
+  color: var(--theme-text-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.glassy-header .logo {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--theme-text-light) !important;
+}
+
+.glassy-header .navbar-brand,
+.glassy-header .nav-link {
+  color: var(--theme-text-medium) !important;
+  margin-right: 15px;
+  transition: color 0.3s ease;
+}
+
+.glassy-header .nav-link:hover,
+.glassy-header .navbar-brand:hover {
+  color: var(--theme-text-light) !important;
+}
+
+.header-menu .nav-item {
+  position: relative;
+}
+
+.header-menu .sub-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--theme-brown-dark);
+  /* Solid sub-menu for readability */
+  border-radius: 0 0 8px 8px;
+  padding: 10px 0;
+  z-index: 1020;
+  min-width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.header-menu .nav-item:hover .sub-menu {
+  display: block;
+}
+
+.header-menu .sub-menu .nav-link {
+  display: block;
+  padding: 8px 15px;
+  white-space: nowrap;
+}
+
+.header-icons .icon {
+  color: var(--theme-text-medium);
+  margin-left: 15px;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+.header-icons .icon:hover {
+  color: var(--theme-text-light);
+}
+
+.glassy-header .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28245, 245, 245, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.glassy-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;
+  background: var(--theme-brown-glassy);
+  backdrop-filter: blur(var(--glass-blur-amount));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount));
+  border-top: 1px solid var(--glass-border-color);
+  box-shadow: 0 -2px 10px var(--glass-shadow-color);
+  color: var(--theme-text-light);
+  /* Light text for dark glass */
+  z-index: 1030;
+  /* Ensure footer is above other content */
+}
+
+.glassy-footer a {
+  color: var(--theme-green-subtle);
+}
+
+.glassy-footer a:hover {
+  color: var(--theme-green-highlight);
+}
+
+/* ==============================================
+     PAGE WRAPPER & MAIN CONTENT AREA
+     ============================================== */
+.page-wrap {
+  /* This class is not in main.php, main.php uses body for flex */
+  flex-grow: 1;
+  /* Allows footer to stick to bottom if content is short */
+  position: relative;
+  /* For z-indexing context if needed */
+  z-index: 1;
+  /* Above video background */
+  /* overflow-y: auto; */
+  /* Allow scrolling for content */
+  width: 100%;
+}
+
+/* Main content area that will have the glassmorphism */
+/* This is applied to <main id="main" class="flex-shrink-0 main-content-wrapper"> */
+.main-content-wrapper {
+  margin: auto;
+  padding: 30px 30px;
+  background: var(--theme-brown-glassy);
+  backdrop-filter: blur(calc(var(--glass-blur-amount) - 2px));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur-amount) - 2px));
+  border-radius: 15px;
+  border: 1px solid var(--glass-border-color);
+  box-shadow: 0 5px 25px var(--glass-shadow-color);
+  color: var(--theme-text-light);
+  width: 100%;
+  min-width: 300px;
+}
+
+/* ==============================================
+     VIDEO & HERO SECTION (HOMEPAGE SPECIFIC)
+     ============================================== */
+
+/* Combined class for the background video iframe */
+.hero-video-iframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  /* Keep it behind other content */
+  display: block;
+  border: none;
+  pointer-events: none;
+  /* The transform and min-height/min-width for aspect ratio are removed
+     as the iframe itself will be fullscreen. Vimeo's background=1 handles content. */
+}
+
+/* Default content overlay for homepage hero text (from index.php) */
+.content-overlay {
+  position: absolute;
+  /* Relative to .site-index or nearest positioned ancestor */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+  /* Above video, potentially below carousel text overlay */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ==============================================
+     WIDGETS (General purpose glassy widgets)
+     ============================================== */
+.glassy-widget {
+  background: var(--theme-brown-glassy);
+  backdrop-filter: blur(var(--glass-blur-amount));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount));
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-color);
+  box-shadow: 0 4px 25px var(--glass-shadow-color);
+  padding: 30px 40px;
+  color: var(--theme-text-light);
+  margin-bottom: 20px;
+}
+
+.widget-animate-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity var(--animation-duration) ease-out, transform var(--animation-duration) ease-out;
+}
+
+.widget-animate-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.widget-title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: var(--theme-green-highlight);
+}
+
+/* ==============================================
+     CAROUSEL STYLES (HOMEPAGE SPECIFIC from index.php)
+     ============================================== */
+.site-index {
+  /* Wrapper for homepage content from index.php */
+  position: relative;
+  /* Needed for absolute positioning of children */
+  width: 100%;
+  height: calc(100vh - 60px - 60px);
+  /* Full viewport height minus header/footer */
+  /* Or if header/footer are NOT fixed and site-index is the only thing: height: 100vh; */
+  overflow: hidden;
+  /* Prevents scrollbars from the video/carousel */
+}
+
+.hero-carousel {
+  position: absolute;
+  /* Combined from .carousel-section */
+  bottom: 30px;
+  /* Combined from .carousel-section */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  z-index: 2;
+
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  background: transparent;
+  text-align: center;
+  color: var(--theme-text-light);
+  height: 100px;
+  cursor: grab;
+}
+
+.carousel-bg-image {
+  /* Image inside swiper-slide from index.php */
+  display: block;
+  width: 100%;
+  /* Make image fill the slide width */
+  height: 100%;
+  /* Make image fill the slide height */
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0.5;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swiper-slide-active .carousel-bg-image {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Carousel Text Overlay - for slide-specific text (from index.php) */
+.carousel-text-overlay {
+  position: absolute;
+  top: 60%;
+  width: 30%;
+  max-width: 1000px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  /* Darker glass for text readability */
+  backdrop-filter: blur(var(--glass-blur-amount));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount));
+  border-radius: 10px;
+  border: 5px solid var(--glass-border-color);
+  color: var(--theme-text-light);
+  text-align: left;
+  z-index: 3;
+  /* Above carousel images */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.carousel-text-overlay:hover {
+  box-shadow: 0 4px 30px rgba(0, 255, 0, 0.4);
+}
+
+.carousel-text-overlay h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--theme-green-highlight);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-text-overlay h4 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: var(--theme-text-medium);
+}
+
+.carousel-text-overlay .btn {
+  background-color: var(--theme-green-highlight);
+  color: var(--theme-brown-dark);
+  border-color: var(--theme-green-highlight);
+  font-weight: bold;
+  width: auto;
+  /* Allow button to size to its content */
+  margin-left: auto;
+  /* Push button to the right */
+  margin-right: 0;
+  /* Ensure no unintended right margin */
+  text-align: end;
+}
+
+.carousel-text-overlay .btn:hover {
+  background-color: var(--theme-green-subtle);
+  border-color: var(--theme-green-subtle);
+}
+
+/* Swiper Navigation and Pagination */
+.swiper-pagination-bullet {
+  background: var(--theme-text-light);
+  opacity: 0.6;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--theme-green-highlight);
+  opacity: 1;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--theme-text-light);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  /* Adjust as needed */
+  height: 40px;
+  /* Adjust as needed */
+  display: flex;
+  /* To center the arrow */
+  align-items: center;
+  /* To center the arrow */
+  justify-content: center;
+  /* To center the arrow */
+  top: 50%;
+  /* Vertically center */
+  transform: translateY(-50%);
+  /* Vertically center */
+  z-index: 15;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 20px;
+  /* Adjust arrow size */
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+
+/* ==============================================
+     SERVICE GRID (If used elsewhere)
+     ============================================== */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.service-grid-item {
+  background: var(--theme-brown-glassy);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border-color);
+}
+
+.service-grid-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px var(--glass-shadow-color);
+}
+
+.service-grid-item .icon {
+  font-size: 3em;
+  margin-bottom: 10px;
+  color: var(--theme-green-highlight);
+}
+
+.service-grid-item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(58, 46, 40, 0.85);
+  padding: 10px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.service-grid-item:hover .service-grid-item-overlay {
+  transform: translateY(0);
+}
+
+.service-grid-item-overlay .title {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--theme-text-light);
+}
+
+.service-grid-item-overlay .details {
+  font-size: 0.8em;
+  color: var(--theme-text-medium);
+}
+
+/* ==============================================
+     MODAL STYLES (If used)
+     ============================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--modal-backdrop-color);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--animation-duration) ease, visibility 0s var(--animation-duration) ease;
+}
+
+.modal-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.modal-content {
+  background: var(--theme-brown-dark);
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 5px 30px var(--glass-shadow-color);
+  color: var(--theme-text-light);
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform var(--animation-duration) ease;
+}
+
+.modal-overlay.is-visible .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--glass-border-color);
+  padding-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 1.5em;
+  color: var(--theme-green-highlight);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--theme-text-medium);
+  font-size: 1.8em;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  color: var(--theme-text-light);
+}
+
+.modal-body p {
+  margin-bottom: 15px;
+}
+
+.modal-body .form-group input[type="email"],
+.modal-body .form-group input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border-color);
+  border-radius: 5px;
+  color: var(--theme-text-light);
+  margin-bottom: 10px;
+}
+
+.modal-body .btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--theme-green-highlight);
+  color: var(--theme-brown-dark);
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-body .btn:hover {
+  background: var(--theme-green-subtle);
+}
+
+.modal-body .google-auth-btn {
+  background: #4285F4;
+  color: white;
+}
+
+.modal-body .google-auth-btn:hover {
+  background: #357ae8;
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 15px 0;
+  color: var(--theme-text-medium);
+}
+
+/* ==============================================
+     MISC UTILITY STYLES
+     ============================================== */
+.not-set {
+  color: #c55;
+  font-style: italic;
+}
+
+a.asc:after,
+a.desc:after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: solid 5px transparent;
+  margin: 4px 4px 2px 4px;
+}
+
+a.asc:after {
+  border-bottom: solid 7px #212529;
+}
+
+a.desc:after {
+  border-top: solid 7px #212529;
+}
+
+.grid-view th {
+  white-space: nowrap;
+}
+
+.hint-block {
+  display: block;
+  margin-top: 5px;
+  color: #2f14c4;
+}
+
+.error-summary {
+  color: #a94442;
+  background: #fdf7f7;
+  border-left: 3px solid #eed3d7;
+  padding: 10px 20px;
+  margin: 0 0 15px 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: .5rem;
+  color: var(--theme-text-medium);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border-color);
+  border-radius: 5px;
+  color: var(--theme-text-light);
+}
+
+/* Star Ratings */
+.star-rating {
+  display: inline-block;
+}
+
+.star-rating .star {
+  font-size: 1.5em;
+  color: var(--star-color-empty);
+  cursor: pointer;
+  display: inline-block;
+}
+
+.star-rating .star.filled {
+  color: var(--star-color);
+}
+
+/* Progress Bar / Count-up */
+.progress-bar-container {
+  width: 100%;
+  background-color: rgba(245, 245, 245, 0.1);
+  border-radius: 5px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background-color: var(--theme-green-highlight);
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.count-up-number {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--theme-green-highlight);
+}
+
+/* Logout button styling */
+.nav li>form>button.logout {
+  padding-top: 7px;
+  /* Bootstrap 5 uses .nav-link for styling, this might need adjustment if using custom structure */
+  color: var(--theme-text-medium) !important;
+  /* Match nav-link color */
+  background: none;
+  border: none;
+}
+
+.nav>li>form>button.logout:hover,
+.nav>li>form>button.logout:focus {
+  text-decoration: none;
+  color: var(--theme-text-light) !important;
+  /* Match nav-link hover color */
+  outline: none;
+}
+
+/* Body content for pages other than homepage */
+.body-content {
+  /* From index.php, can be used for general content sections */
+  padding: 20px;
+  /* This might be inside .main-content-wrapper on non-home pages */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  body {
+    padding-top: 65px;
+    /* Adjust for smaller header */
+    padding-bottom: 50px;
+    /* Adjust for smaller footer */
+  }
+
+  .nav li>form>button.logout {
+    display: block;
+    text-align: left;
+    width: 100%;
+    padding: 10px 15px;
+    /* Match other nav-links in dropdown */
+  }
+
+  .glassy-header {
+    padding: 10px 15px;
+  }
+
+  .main-content-wrapper {
+    margin: 10px;
+    padding: 15px 20px;
+  }
+
+  .site-index {
+    height: calc(100vh - 65px - 50px);
+    /* Adjust for mobile header/footer */
+  }
+
+  .content-overlay h1,
+  .carousel-text-overlay h1 {
+    font-size: 1.5em;
+  }
+
+  .content-overlay p,
+  .carousel-text-overlay p {
+    font-size: 1em;
+  }
+
+  .hero-carousel {
+    /* bottom: 30px; */
+    /* Already set in the main rule, can be overridden if needed */
+    width: 90%;
+    /* Adjust carousel width for mobile if needed */
+    /* max-width: 95%; */
+    /* Or use max-width */
+  }
+
+  .swiper-slide {
+    height: 150px;
+  }
+
+  .carousel-text-overlay {
+    bottom: calc(150px + 50px);
+    /* (mobile slide height + carousel-section bottom + padding) */
+    padding: 15px;
+  }
+}

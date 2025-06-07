@@ -1,0 +1,20 @@
+:root {
+    --cinematic-brown: #5D4037; /* Example brown - adjust as needed */
+    --cinematic-brown-dark: #3E2723;
+    --cinematic-brown-light: #A1887F;
+    --highlight-green: #4CAF50; /* Example green - adjust as needed */
+    --highlight-green-light: #81C784;
+    --text-light: #F5F5F5;
+    --text-dark: #212121;
+    --glassy-bg: rgba(255, 255, 255, 0.1); /* Example for glassy effect */
+    --glassy-border: rgba(255, 255, 255, 0.2);
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--cinematic-brown-dark); /* Dark brown background */
+    color: var(--text-light); /* Light text for contrast */
+    line-height: 1.6;
+}
+
+/* Further theme-specific styles will go here */
