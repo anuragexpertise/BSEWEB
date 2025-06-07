@@ -5,14 +5,15 @@ namespace app\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\BadRequestHttpException;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\SignupForm; // Added for signup
-use app\controllers\PostController; // Added to call the static method
+use app\models\SignupForm; 
+use app\controllers\PostController; 
 use app\models\Post;
-
+use app\models\User;
 class SiteController extends Controller
 {
     /**
@@ -23,17 +24,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'], // Add 'signup' to only if you want to restrict it (e.g. only guests)
+                'only' => ['logout', 'signup'],
                 'rules' => [
+                    [
+                        'actions' => ['signup'],
+                        'allow' => true,
+                        'roles' => ['?'], // Allow guest users to signup
+                    ],
                     [
                         'actions' => ['logout'],
                         'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'actions' => ['signup'], // Allow guests to signup
-                        'allow' => true,
-                        'roles' => ['?'], // '?' means guest users
+                        'roles' => ['@'], // Allow authenticated users to logout
                     ],
                 ],
             ],
@@ -80,9 +81,9 @@ class SiteController extends Controller
         foreach ($featuredPosts as $post) {
             // Check if vimeo_video_url is a Vimeo link and carousel_image_url might need updating or is missing
             if (empty($post->carousel_image_url) && isset($post->vimeo_video_url) && strpos($post->vimeo_video_url, 'vimeo.com') !== false) {
-                $thumbnailUrl = PostController::getVimeoThumbnailUrl($post->vimeo_video_url); // Call static helper
+                $thumbnailUrl = PostController::getVimeoThumbnailUrl($post->vimeo_video_url); 
                 if ($thumbnailUrl) {
-                    $post->carousel_image_url = $thumbnailUrl; // Update/set the carousel_image_url
+                    $post->carousel_image_url = $thumbnailUrl; 
                 } else {
                     // Optionally set a default placeholder if thumbnail fetch fails
                     // To use Url::to here, ensure 'use yii\helpers\Url;' is at the top of this file.
@@ -144,7 +145,6 @@ class SiteController extends Controller
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
-
             return $this->refresh();
         }
         return $this->render('contact', [
@@ -169,18 +169,51 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+
+
+
 
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
-            Yii::$app->session->setFlash('success', 'Thank you for registration. Please login.');
-            return $this->redirect(['site/login']);
+            Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
+            return $this->goHome();
         }
 
-        return $this->render('signup', [
+        return $this->render('signup', [ // Assumes you have a views/site/signup.php
             'model' => $model,
         ]);
+    }
+
+    // You might have other actions like actionAbout, etc.
+
+    /**
+     * Verifies email address.
+     *
+     * @param string $token
+     * @throws BadRequestHttpException
+     * @return yii\web\Response
+     */
+    public function actionVerifyEmail($token)
+    {
+        if (empty($token) || !is_string($token)) {
+            throw new BadRequestHttpException('Email verification token cannot be blank.');
+        }
+
+        $user = User::findByVerificationToken($token);
+
+        if ($user) {
+            $user->status = User::STATUS_ACTIVE;
+            $user->removeEmailVerificationToken(); // Or $user->verification_token = null;
+            if ($user->save(false)) { // Skip validation as we are only changing status and token
+                Yii::$app->session->setFlash('success', 'Your email has been confirmed! You can now login.');
+                return $this->redirect(['site/login']);
+            } else {
+                Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account.');
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Invalid or expired verification link.');
+        }
+
+        return $this->goHome();
     }
 }

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\helpers\Url;
 
 /**
  * Signup form
@@ -53,21 +54,30 @@ class SignupForm extends Model
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->status = User::STATUS_ACTIVE; // Or User::STATUS_INACTIVE if email verification is needed
-
-        return $user->save() ? $user : null;
+        $user->generateEmailVerificationToken();
+        $user->status = User::STATUS_INACTIVE; // Set status to inactive, requiring email verification
+        
+        // Save user first, then send email. If email fails, user is still saved but inactive.
+        return $user->save() && $this->sendEmail($user) ? $user : null;
     }
 
     /**
      * Sends confirmation email to user
-     * @param User $user user model to with email should be send
+     * @param User $user user model to whom email should be sent
      * @return bool whether the email was sent
      */
     protected function sendEmail($user)
     {
-        // This is a placeholder for email sending logic, e.g., for account verification.
-        // You would typically configure a mailer component and compose an email here.
-        // For now, we'll assume direct activation or skip this step.
-        return true;
+        $verifyLink = Yii::$app->urlManager->createAbsoluteUrl(['site/verify-email', 'token' => $user->verification_token]);
+        return Yii::$app
+            ->mailer
+            ->compose(
+                ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'], // View files for the verification email
+                ['user' => $user, 'verifyLink' => $verifyLink]
+            )
+            ->setFrom([Yii::$app->params['supportEmail'] ?? 'support@example.com' => Yii::$app->name . ' robot'])
+            ->setTo($this->email)
+            ->setSubject('Account verification for ' . Yii::$app->name)
+            ->send();
     }
 }

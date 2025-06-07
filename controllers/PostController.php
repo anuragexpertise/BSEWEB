@@ -24,10 +24,10 @@ class PostController extends Controller
             [
                 'access' => [
                     'class' => \yii\filters\AccessControl::class, // Use fully qualified class name
-                    'only' => ['index', 'view', 'create', 'update', 'delete', 'fetch-vimeo-data'], // Actions to protect
+                    'only' => ['index', 'view', 'create', 'update', 'delete', 'fetch-vimeo-data', 'display'], // Actions to protect
                     'rules' => [
                         [
-                            'actions' => ['index', 'view', 'create', 'update', 'delete', 'fetch-vimeo-data'],
+                            'actions' => ['index', 'view', 'create', 'update', 'delete', 'fetch-vimeo-data', 'display'],
                             'allow' => true,
                             'matchCallback' => function ($rule, $action) {
                                 return !Yii::$app->user->isGuest && Yii::$app->user->identity->username === 'admin';

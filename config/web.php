@@ -9,7 +9,7 @@ $config = [
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
         'request' => [
@@ -30,7 +30,22 @@ $config = [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
             // send all mails to a file by default.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+                'scheme' => 'smtps',
+                'host' => 'smtp.gmail.com', // e.g., 'smtp.example.com'
+                'username' => 'anurag.sculptexpert@gmail.com',
+                'password' => 'March#@!9453',
+                'port' => 587,
+                'encryption'=> 'tls',
+                // 'dsn' => 'native://default',
+            ],
+            'messageConfig' => [
+                'charset' => 'UTF-8',
+                'from' => [
+                    ($params['senderEmail'] ?? 'noreply@example.com') => ($params['senderName'] ?? 'BSE Application')
+                ],
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
