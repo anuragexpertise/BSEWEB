@@ -212,19 +212,7 @@ class PostController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post())) {
-            // Ensure uploaded_at is set if not provided by form
-            // (e.g., if Vimeo fetch didn't happen or didn't provide it, or if it was cleared)
-            // If the field is submitted empty, and it's required, validation will catch it.
-            // If it's not part of the form submission for update, it retains its old value.
-            // If it IS part of the form and can be empty, then handle accordingly.
-            // For now, assuming uploaded_at is not meant to be re-fetched from Vimeo on update by default.
-            // If it's empty from the form, and it's required, it should cause a validation error unless set here.
-            // For consistency with create, if it's somehow empty and not required, we might set it.
-            // However, typically for an update, if a field is not submitted, its value shouldn't change unless explicitly coded.
-            // If `uploaded_at` can be modified via the form and becomes empty, and you want to default it:
-            // if (empty($model->uploaded_at)) {
-            //     $model->uploaded_at = time(); // Or keep its old value: $model->uploaded_at = $model->getOldAttribute('uploaded_at');
-            // }
+
 
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Post updated successfully.');

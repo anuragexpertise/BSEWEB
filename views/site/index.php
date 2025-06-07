@@ -131,7 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
         slidesPerView: 3,
         spaceBetween: 15,
         centeredSlides: true,
-        grabCursor: true,   
+        grabCursor: true,
+        autoplay: {
+            delay: 15000, 
+            disableOnInteraction: true,
+        },
         pagination: { el: '.swiper-pagination', clickable: true },
         navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         on: {
