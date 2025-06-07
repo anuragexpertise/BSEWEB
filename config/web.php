@@ -32,12 +32,11 @@ $config = [
             // send all mails to a file by default.
             'useFileTransport' => false,
             'transport' => [
-                'scheme' => 'smtps',
+                'scheme' => 'smtp',
                 'host' => 'smtp.gmail.com', // e.g., 'smtp.example.com'
                 'username' => 'anurag.sculptexpert@gmail.com',
                 'password' => 'XXXXXXXXXXXXXXXXXXX',
                 'port' => 587,
-                'tlss' => true,
                 // 'dsn' => 'native://default',
             ],
             'messageConfig' => [

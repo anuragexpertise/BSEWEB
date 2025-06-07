@@ -46,7 +46,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php ActiveForm::end(); ?>
 
             <div style="color:#999;">
-                If you don't have an account, you can <?= Html::a('signup here', ['site/signup']) ?>.
+                <!-- If you don't have an account, you can <?= Html::a('signup here', ['site/signup']) ?>. -->
+                <p class ="alert alert-danger">New Signups not working correctly. Inconvenience is deeply regretted. Call directly on +91 9897037419 for assistance.</p>
+                If you don't have an account, you can <?= Html::a('signup here', ['site/index']) ?>.
             </div>
 
         </div>

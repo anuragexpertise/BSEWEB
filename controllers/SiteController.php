@@ -10,8 +10,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\SignupForm; 
-use app\controllers\PostController; 
+use app\models\SignupForm;
+use app\controllers\PostController;
 use app\models\Post;
 use app\models\User;
 class SiteController extends Controller
@@ -81,9 +81,9 @@ class SiteController extends Controller
         foreach ($featuredPosts as $post) {
             // Check if vimeo_video_url is a Vimeo link and carousel_image_url might need updating or is missing
             if (empty($post->carousel_image_url) && isset($post->vimeo_video_url) && strpos($post->vimeo_video_url, 'vimeo.com') !== false) {
-                $thumbnailUrl = PostController::getVimeoThumbnailUrl($post->vimeo_video_url); 
+                $thumbnailUrl = PostController::getVimeoThumbnailUrl($post->vimeo_video_url);
                 if ($thumbnailUrl) {
-                    $post->carousel_image_url = $thumbnailUrl; 
+                    $post->carousel_image_url = $thumbnailUrl;
                 } else {
                     // Optionally set a default placeholder if thumbnail fetch fails
                     // To use Url::to here, ensure 'use yii\helpers\Url;' is at the top of this file.
@@ -193,10 +193,11 @@ class SiteController extends Controller
      * @throws BadRequestHttpException
      * @return yii\web\Response
      */
+
     public function actionVerifyEmail($token)
     {
         if (empty($token) || !is_string($token)) {
-            throw new BadRequestHttpException('Email verification token cannot be blank.');
+            throw new BadRequestHttpException('Verification token cannot be blank.');
         }
 
         $user = User::findByVerificationToken($token);
@@ -204,16 +205,16 @@ class SiteController extends Controller
         if ($user) {
             $user->status = User::STATUS_ACTIVE;
             $user->removeEmailVerificationToken(); // Or $user->verification_token = null;
-            if ($user->save(false)) { // Skip validation as we are only changing status and token
-                Yii::$app->session->setFlash('success', 'Your email has been confirmed! You can now login.');
-                return $this->redirect(['site/login']);
+            if ($user->save(false)) { // Skip validation if you only changed status and token
+                Yii::$app->user->login($user);
+                Yii::$app->session->setFlash('success', 'Your email has been confirmed! You are now logged in.');
             } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account.');
+                Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account. Please try again.');
             }
-        } else {
-            Yii::$app->session->setFlash('error', 'Invalid or expired verification link.');
+            return $this->goHome();
         }
 
+        Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account with provided token.');
         return $this->goHome();
     }
 }
