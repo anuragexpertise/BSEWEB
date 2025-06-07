@@ -35,9 +35,9 @@ $config = [
                 'scheme' => 'smtps',
                 'host' => 'smtp.gmail.com', // e.g., 'smtp.example.com'
                 'username' => 'anurag.sculptexpert@gmail.com',
-                'password' => 'March#@!9453',
+                'password' => 'XXXXXXXXXXXXXXXXXX',
                 'port' => 587,
-                'encryption'=> 'tls',
+                'tlss' => true,
                 // 'dsn' => 'native://default',
             ],
             'messageConfig' => [
