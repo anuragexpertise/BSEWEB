@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\SignupForm; // Added for signup
 use app\controllers\PostController; // Added to call the static method
 use app\models\Post;
 
@@ -22,12 +23,17 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'signup'], // Add 'signup' to only if you want to restrict it (e.g. only guests)
                 'rules' => [
                     [
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['signup'], // Allow guests to signup
+                        'allow' => true,
+                        'roles' => ['?'], // '?' means guest users
                     ],
                 ],
             ],
@@ -154,5 +160,27 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Signs user up.
+     *
+     * @return mixed
+     */
+    public function actionSignup()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new SignupForm();
+        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+            Yii::$app->session->setFlash('success', 'Thank you for registration. Please login.');
+            return $this->redirect(['site/login']);
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
     }
 }
