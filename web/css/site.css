@@ -290,7 +290,7 @@ a:hover {
 .hero-carousel {
   position: absolute;
   /* Combined from .carousel-section */
-  bottom: 30px;
+  bottom: 25px;
   /* Combined from .carousel-section */
   left: 50%;
   transform: translateX(-50%);
@@ -334,8 +334,9 @@ a:hover {
 .carousel-text-overlay {
   position: absolute;
   top: 60%;
-  width: 30%;
-  max-width: 1000px;
+  width: auto;
+  max-width: 800px;
+  margin-left: 20px;
   padding: 5px;
   background: rgba(0, 0, 0, 0.5);
   /* Darker glass for text readability */
