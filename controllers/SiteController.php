@@ -12,6 +12,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\SignupForm;
 use app\controllers\PostController;
+use app\models\Service; // Added for fetching services
 use app\models\Post;
 use app\models\User;
 class SiteController extends Controller
@@ -76,6 +77,11 @@ class SiteController extends Controller
             ->orderBy(['uploaded_at' => SORT_DESC])
             ->all();
 
+        // Fetch active services to display in the grid
+        // Add any conditions like 'is_active' => 1 or ordering as needed
+        $services = Service::find()
+            ->orderBy(['title' => SORT_ASC]) // Example: order by title
+            ->all();
         // This loop might be redundant if carousel_image_url is reliably set at post creation/update.
         // If kept, ensure consistency:
         foreach ($featuredPosts as $post) {
@@ -94,6 +100,7 @@ class SiteController extends Controller
 
         return $this->render('index', [
             'featuredPosts' => $featuredPosts,
+            'services' => $services, // Pass services to the view
         ]);
     }
 

@@ -41,7 +41,7 @@ body {
   font-family: var(--font-primary);
   min-height: 100vh;
   min-width: 100vw;
-  position: relative;
+  position: absolute;
   background-color: var(--theme-brown-dark);
   color: var(--theme-text-light);
   line-height: 1.6;
@@ -289,14 +289,13 @@ a:hover {
 
 .hero-carousel {
   position: absolute;
-  /* Combined from .carousel-section */
-  bottom: 25px;
-  /* Combined from .carousel-section */
+  /* Positioned above the service grid */
+  bottom: calc(30px + 256px + 30px); /* service_grid_container.bottom + service_grid_item.height + spacing */
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
-  z-index: 2;
-
+  max-width: 1200px; /* Optional: constrain width */
+  z-index: 3; /* Above service grid */
 }
 
 .swiper-slide {
@@ -333,7 +332,8 @@ a:hover {
 /* Carousel Text Overlay - for slide-specific text (from index.php) */
 .carousel-text-overlay {
   position: absolute;
-  top: 60%;
+  top: 50%; /* Vertically centered in the available space */
+  transform: translateY(-50%);
   width: auto;
   max-width: 800px;
   margin-left: 20px;
@@ -346,7 +346,7 @@ a:hover {
   border: 5px solid var(--glass-border-color);
   color: var(--theme-text-light);
   text-align: left;
-  z-index: 3;
+  z-index: 4; /* Above carousel images and service grid */
   /* Above carousel images */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
@@ -381,6 +381,14 @@ a:hover {
   margin-right: 0;
   /* Ensure no unintended right margin */
   text-align: end;
+}
+
+.carousel-text-overlay #carouselPrice {
+  font-size: 1.2em;
+  color: var(--theme-green-highlight);
+  font-weight: bold;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .carousel-text-overlay .btn:hover {
@@ -430,6 +438,81 @@ a:hover {
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* ==============================================
+     SERVICE GRID STYLES (HOMEPAGE SPECIFIC)
+     ============================================== */
+.service-grid-container {
+  position: absolute;
+  bottom: 30px; /* Positioned at the bottom of the .site-index */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1320px; /* Max width for the grid container (e.g., 4 items * (256px + 20px gap) + some padding) */
+  z-index: 2; /* Above background video, below carousel */
+  padding: 10px 0; /* Padding for the container */
+  display: flex;
+  justify-content: center;
+}
+
+.service-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center items if they don't fill the row */
+  gap: 20px; /* Space between grid items */
+  width: 100%;
+}
+
+.service-grid-item {
+  width: 256px;
+  height: 256px;
+  background-color: var(--theme-brown-glassy);
+  border: 1px solid var(--glass-border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Title at the bottom */
+  align-items: center;
+  text-align: center;
+  padding: 15px;
+  box-shadow: 0 2px 8px var(--glass-shadow-color);
+  background-size: cover;
+  background-position: center;
+  position: relative; /* For pseudo-element overlay */
+  overflow: hidden; /* Ensure pseudo-element respects border-radius */
+}
+
+.service-grid-item::before { /* Optional: Dark overlay for better text readability on images */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.3); /* Adjust opacity as needed */
+    border-radius: इन्हेरिट; /* Inherit border-radius from parent */
+    z-index: 1;
+}
+
+.service-grid-item:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 6px 15px var(--glass-shadow-color);
+}
+
+.service-grid-item-title {
+  font-weight: bold;
+  color: var(--theme-text-light);
+  font-size: 1.1em;
+  z-index: 2; /* Above pseudo-element */
+  background-color: rgba(0,0,0,0.6); /* Slight background for title for readability */
+  padding: 8px 12px;
+  border-radius: 5px;
+  width: calc(100% - 10px); /* Adjust to fit padding, considering item's padding */
+  box-sizing: border-box;
+  margin-bottom: 5px; /* Space from bottom edge */
 }
 
 
@@ -612,6 +695,44 @@ a:hover {
 }
 
 /* ==============================================
+     RESULTS OVERLAY STYLES (HOMEPAGE SPECIFIC)
+     ============================================== */
+.results-overlay {
+  position: absolute;
+  top: 50%;
+  /* Adjust left/right for desired horizontal position, e.g., right side */
+  right: 30px; /* Example: position on the right */
+  transform: translateY(-50%);
+  width: auto;
+  max-width: 320px; /* Adjust as needed */
+  padding: 20px;
+  background: rgba(20, 20, 20, 0.88); /* Darker, less transparent glass */
+  backdrop-filter: blur(calc(var(--glass-blur-amount) + 5px));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur-amount) + 5px));
+  border-radius: 12px;
+  border: 1px solid var(--glass-border-color);
+  color: var(--theme-text-light);
+  text-align: center;
+  z-index: 5; /* Highest, on top of carousel text overlay */
+  box-shadow: 0 5px 35px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.results-overlay img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 2px solid var(--glass-border-color);
+}
+
+.results-overlay h3 {
+  font-size: 1.3em;
+  margin-bottom: 0;
+  color: var(--theme-green-highlight);
+}
+
+/* ==============================================
      MISC UTILITY STYLES
      ============================================== */
 .not-set {
@@ -783,12 +904,12 @@ a.desc:after {
   }
 
   .hero-carousel {
-    /* bottom: 30px; */
-    /* Already set in the main rule, can be overridden if needed */
+    bottom: calc(20px + 180px + 20px); /* mobile: service_grid_container.bottom + service_grid_item.height + spacing */
     width: 90%;
-    /* Adjust carousel width for mobile if needed */
-    /* max-width: 95%; */
-    /* Or use max-width */
+  }
+  .service-grid-container {
+    bottom: 20px;
+    width: 95%;
   }
 
   .swiper-slide {
@@ -796,8 +917,22 @@ a.desc:after {
   }
 
   .carousel-text-overlay {
-    bottom: calc(150px + 50px);
-    /* (mobile slide height + carousel-section bottom + padding) */
+    /* top: 50%, transform: translateY(-50%) should still work */
+    /* Adjust max-width and margins if needed */
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
     padding: 15px;
+  }
+  .results-overlay {
+    max-width: 80vw; /* More responsive width */
+    left: 10vw; /* Center it more or less */
+    right: 10vw;
+  }
+  .service-grid-item {
+    width: 180px; /* Smaller items for mobile */
+    height: 180px;
   }
 }

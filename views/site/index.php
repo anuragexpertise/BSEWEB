@@ -1,6 +1,7 @@
 <?php
 /** @var yii\web\View $this */
 /** @var \app\models\Post[] $featuredPosts */
+/** @var \app\models\Service[] $services */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -40,9 +41,10 @@ if (empty($featuredPosts)) {
 
     <div class="carousel-text-overlay" id="carouselTextOverlayContainer" style="display: none;">
 
-        <h1 id="carouselTitle" class="color: green; font-weight: bold;"></h1>
+        <h1 id="carouselTitle" style="color: var(--theme-green-highlight); font-weight: bold;"></h1>
         <h4 id="carouselDescription"></h4>
-        <a href="#" id="carouselContactUs" class="btn btn-primary text-end">Contact Us</a>
+        <p id="carouselPrice" style="font-size: 1.2em; color: var(--theme-green-highlight); font-weight: bold; margin-top: 0.5rem; margin-bottom: 1rem; display: none;"></p>
+        <a href="#" id="carouselActionLink" class="btn btn-primary text-end">View Details</a>
     </div>
 
     <!-- Swiper container now directly positioned -->
@@ -65,6 +67,33 @@ if (empty($featuredPosts)) {
         <div class="swiper-button-prev"></div>
     </div>
 </div>
+
+<!-- Service Grid Container -->
+<?php if (!empty($services)): ?>
+<div class="service-grid-container">
+    <div class="service-grid">
+        <?php foreach ($services as $service): ?>
+            <div class="service-grid-item"
+                 data-title="<?= Html::encode($service->title) ?>"
+                 data-description="<?= Html::encode($service->description) ?>"
+                 data-video-url="<?= Html::encode($service->vimeo_video_url) ?>"
+                 data-price="<?= Html::encode(Yii::$app->formatter->asCurrency($service->price)) ?>"
+                 data-results-image-url="<?= Html::encode($service->result_image_url) ?>"
+                 data-slug="<?= Html::encode($service->slug) ?>"
+                 style="background-image: url('<?= Html::encode($service->button_image_url ?? '') ?>');">
+                <div class="service-grid-item-title"><?= Html::encode($service->title) ?></div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- Results Overlay -->
+<div class="results-overlay" id="resultsOverlayContainer" style="display: none;">
+    <img id="resultsImage" src="" alt="Service Results" />
+    <h3 id="resultsTitle"></h3>
+</div>
+
 <div class="body-content">
 
 </div>
@@ -75,9 +104,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const heroBgIframe = document.getElementById('heroBackgroundVideoIframe');
     const carouselTitleEl = document.getElementById('carouselTitle');
     const carouselDescriptionEl = document.getElementById('carouselDescription');
-    const carouselContactUsEl = document.getElementById('carouselContactUs');
+    const carouselPriceEl = document.getElementById('carouselPrice');
+    const carouselActionLinkEl = document.getElementById('carouselActionLink');
     const defaultHeroTextContainerEl = document.getElementById('defaultHeroTextContainer');
     const carouselTextOverlayContainerEl = document.getElementById('carouselTextOverlayContainer');
+    const resultsOverlayContainerEl = document.getElementById('resultsOverlayContainer');
+    const resultsImageEl = document.getElementById('resultsImage');
+    const resultsTitleEl = document.getElementById('resultsTitle');
+
+    let serviceVideoTimeout = null;
+    let lastActiveSwiperIndex = 0;
 
     function getVimeoIdFromUrl(url) {
         if (!url || !url.includes('vimeo.com')) return null;
@@ -86,21 +122,45 @@ document.addEventListener('DOMContentLoaded', function () {
         return match ? match[1] : null;
     }
 
-    function updateHeroBackgroundAndText(activeSlide) {
-        if (!activeSlide) { // Should not happen with swiper init/slideChange, but good guard
+    function updateHeroBackgroundAndText(activeSlide, isService = false, serviceData = null) {
+        clearTimeout(serviceVideoTimeout);
+        if (resultsOverlayContainerEl) resultsOverlayContainerEl.style.display = 'none';
+
+        if (!activeSlide && !isService) {
             if (defaultHeroTextContainerEl) defaultHeroTextContainerEl.style.display = 'block';
             if (carouselTextOverlayContainerEl) carouselTextOverlayContainerEl.style.display = 'none';
             return;
         }
 
-        const videoPageUrl = activeSlide.getAttribute('data-video-url');
-        const title = activeSlide.getAttribute('data-title');
-        const postUrl = activeSlide.getAttribute('data-post-url');
+        let videoPageUrl, title, description, actionUrl, price, entitySlug;
 
-        const description = activeSlide.getAttribute('data-description'); // Get description
-        // Update background video
+        if (isService && serviceData) {
+            videoPageUrl = serviceData.videoUrl;
+            title = serviceData.title;
+            description = serviceData.description;
+            price = serviceData.price;
+            entitySlug = serviceData.slug;
+            // Assuming a service display page like /services/slug
+            actionUrl = `<?= Url::to(['/service/display', 'slug' => '']) ?>` + entitySlug;
+
+            if (serviceData.resultImageUrl && resultsImageEl && resultsTitleEl && resultsOverlayContainerEl) {
+                resultsImageEl.src = serviceData.resultImageUrl;
+                resultsTitleEl.textContent = `Results:`;
+                resultsOverlayContainerEl.style.display = 'block';
+            }
+        } else if (activeSlide) {
+            videoPageUrl = activeSlide.getAttribute('data-video-url');
+            title = activeSlide.getAttribute('data-title');
+            description = activeSlide.getAttribute('data-description');
+            actionUrl = activeSlide.getAttribute('data-post-url');
+            price = null; // Posts don't have a price in this context
+        } else {
+            if (defaultHeroTextContainerEl) defaultHeroTextContainerEl.style.display = 'block';
+            if (carouselTextOverlayContainerEl) carouselTextOverlayContainerEl.style.display = 'none';
+            return;
+        }
+
         const vimeoId = getVimeoIdFromUrl(videoPageUrl);
-
         if (heroBgIframe) {
             if (vimeoId) {
                 const playerUrl = `https://player.vimeo.com/video/\${vimeoId}?autoplay=1&loop=1&muted=1&background=1&autopause=0&quality=auto&transparent=0`;
@@ -111,21 +171,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (defaultHeroTextContainerEl) defaultHeroTextContainerEl.style.display = 'none';
                 if (carouselTextOverlayContainerEl) carouselTextOverlayContainerEl.style.display = 'block';
 
-                // Update carousel text overlay
                 if (carouselTitleEl) carouselTitleEl.textContent = title;
-                if (carouselDescriptionEl) carouselDescriptionEl.textContent = description; // Update description
-                if (carouselContactUsEl) carouselContactUsEl.href = postUrl;
-
+                if (carouselDescriptionEl) carouselDescriptionEl.textContent = description;
+                if (carouselPriceEl) {
+                    carouselPriceEl.textContent = price ? price : '';
+                    carouselPriceEl.style.display = price ? 'block' : 'none';
+                }
+                if (carouselActionLinkEl) {
+                    carouselActionLinkEl.href = actionUrl;
+                    carouselActionLinkEl.textContent = isService ? 'Service Details' : 'View Post';
+                    carouselActionLinkEl.style.display = actionUrl ? 'inline-block' : 'none';
+                }
             } else {
                 // No valid video for this slide: show default text, hide carousel text
                 // heroBgIframe.src = ''; // Optional: Clear iframe if no video, or let previous video continue
                 console.warn('Invalid or non-Vimeo URL for hero background:', videoPageUrl);
                 if (defaultHeroTextContainerEl) defaultHeroTextContainerEl.style.display = 'block';
                 if (carouselTextOverlayContainerEl) carouselTextOverlayContainerEl.style.display = 'none';
+                if (resultsOverlayContainerEl) resultsOverlayContainerEl.style.display = 'none';
             }
         }
     }
-
     var swiper = new Swiper('.hero-carousel', {
         loop: true,
         slidesPerView: 3,
@@ -133,20 +199,53 @@ document.addEventListener('DOMContentLoaded', function () {
         centeredSlides: true,
         grabCursor: true,
         autoplay: {
-            delay: 15000, 
+            delay: 15000,
             disableOnInteraction: true,
         },
         pagination: { el: '.swiper-pagination', clickable: true },
         navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         on: {
             init: function () {
+                lastActiveSwiperIndex = this.activeIndex;
                 updateHeroBackgroundAndText(this.slides[this.activeIndex]);
             },
             slideChangeTransitionEnd: function () {
+                clearTimeout(serviceVideoTimeout);
+                if (resultsOverlayContainerEl) resultsOverlayContainerEl.style.display = 'none';
+                lastActiveSwiperIndex = this.activeIndex;
                 updateHeroBackgroundAndText(this.slides[this.activeIndex]);
             },
         },
     });
+
+    const serviceGridItems = document.querySelectorAll('.service-grid-item');
+    serviceGridItems.forEach(item => {
+        item.addEventListener('click', function() {
+            clearTimeout(serviceVideoTimeout);
+
+            const serviceData = {
+                title: this.dataset.title,
+                description: this.dataset.description,
+                videoUrl: this.dataset.videoUrl,
+                price: this.dataset.price,
+                resultImageUrl: this.dataset.resultImageUrl,
+                slug: this.dataset.slug
+            };
+
+            // lastActiveSwiperIndex is already set by swiper events
+            updateHeroBackgroundAndText(null, true, serviceData);
+
+            serviceVideoTimeout = setTimeout(() => {
+                if (swiper && swiper.slides[lastActiveSwiperIndex]) {
+                    updateHeroBackgroundAndText(swiper.slides[lastActiveSwiperIndex]);
+                } else if (swiper && swiper.slides.length > 0) { // Fallback
+                    updateHeroBackgroundAndText(swiper.slides[swiper.activeIndex]);
+                }
+                // updateHeroBackgroundAndText called with a slide will hide resultsOverlay
+            }, 15000); // 15 seconds
+        });
+    });
+
 });
 JS, \yii\web\View::POS_END);
 ?>
